@@ -1,4 +1,4 @@
-module products
+module github.com/alejo-lapix/products-go
 
 go 1.12
 
