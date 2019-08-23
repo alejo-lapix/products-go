@@ -17,9 +17,9 @@ type Product struct {
 	Price             *float64                      `json:"price"`
 	Description       *string                       `json:"description"`
 	CategoryID        *string                       `json:"categoryId"`
-	CreatedAt         *string                       `json:"createdAt"`
 	Multimedia        []*persistence.MultimediaItem `json:"multimedia"`
 	UnitOfMeasurement *UnitOfMeasurement            `json:"unitOfMeasurement"`
+	CreatedAt         *string                       `json:"createdAt"`
 }
 
 func NewProductEntity(name, description, categoryID *string, price *float64, measurement *UnitOfMeasurement) (*Product, error) {
