@@ -52,7 +52,7 @@ func (category *Category) RemoveMultimediaItem(id *string) bool {
 	itemExists := false
 
 	for _, item := range category.Multimedia {
-		if *item.Key() != *id {
+		if *item.ID != *id {
 			newList = append(newList, item)
 		} else {
 			itemExists = true
@@ -68,7 +68,7 @@ type Commitable interface {
 
 type CategoryRepository interface {
 	MainCategories(limit, offset int) ([]*Category, error)
-	SubCategories(categoryID int) ([]*Category, error)
+	SubCategories(categoryID *string) ([]*Category, error)
 	Find(ID *string) (*Category, error)
 	Store(*Category) error
 	Remove(ID *string) error
