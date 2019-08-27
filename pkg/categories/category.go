@@ -12,7 +12,6 @@ type Category struct {
 	Multimedia       []*persistence.MultimediaItem `json:"multimedia"`
 	ParentCategoryID *string                       `json:"parentCategoryId"`
 	CreatedAt        *string                       `json:"createdAt"`
-	subCategories    []*Category
 }
 
 func createdAt() *string {
