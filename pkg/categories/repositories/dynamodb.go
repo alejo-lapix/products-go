@@ -22,24 +22,23 @@ func NewDynamoDBCategoryRepository(db *dynamodb.DynamoDB) *DynamoDBCategoryRepos
 }
 
 func (repository *DynamoDBCategoryRepository) MainCategories(limit, offset int) ([]*categories.Category, error) {
-	var mainCategories []*categories.Category
-	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
-		KeyConditionExpression: aws.String("attribute_not_exists(parentCategoryId)"),
-		IndexName:              aws.String("parentCategoryId"),
-		TableName:              repository.tableName,
+	items := make([]*categories.Category, 0)
+	output, err := repository.DynamoDB.Scan(&dynamodb.ScanInput{
+		FilterExpression: aws.String("attribute_not_exists(parentCategoryId)"),
+		TableName:        repository.tableName,
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, mainCategories)
+	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, &items)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return mainCategories, nil
+	return items, nil
 }
 
 func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) ([]*categories.Category, error) {
@@ -117,9 +116,10 @@ func (repository *DynamoDBCategoryRepository) Update(ID *string, category *categ
 	}
 
 	_, err = repository.DynamoDB.PutItem(&dynamodb.PutItemInput{
-		ConditionExpression: aws.String("attribute_exists(id)"),
-		Item:                item,
-		TableName:           repository.tableName,
+		ConditionExpression:       aws.String("id = :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":id": {S: ID}},
+		Item:                      item,
+		TableName:                 repository.tableName,
 	})
 
 	return err

@@ -39,7 +39,7 @@ func NewProductEntity(name, description, categoryID *string, price *float64, mea
 
 type ProductRepository interface {
 	Store(*Product) error
-	Update(*Product) error
+	Update(id *string, product *Product) error
 	FindOne(id *string) (*Product, error)
 	FindMany(ids []*string) ([]*Product, error)
 	FindByCategoryID(id *string) ([]*Product, error)

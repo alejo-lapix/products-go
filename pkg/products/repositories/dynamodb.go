@@ -35,7 +35,7 @@ func (repository *DynamoDBProductRepository) Store(product *products.Product) er
 	return err
 }
 
-func (repository *DynamoDBProductRepository) Update(product *products.Product) error {
+func (repository *DynamoDBProductRepository) Update(id *string, product *products.Product) error {
 	item, err := dynamodbattribute.MarshalMap(product)
 
 	if err != nil {
@@ -43,15 +43,16 @@ func (repository *DynamoDBProductRepository) Update(product *products.Product) e
 	}
 
 	_, err = repository.DynamoDB.PutItem(&dynamodb.PutItemInput{
-		ConditionExpression: aws.String("attribute_exists(id)"),
-		Item:                item,
-		TableName:           repository.tableName,
+		ConditionExpression:       aws.String("id = :id"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":id": {S: id}},
+		Item:                      item,
+		TableName:                 repository.tableName,
 	})
 
 	return err
 }
 func (repository *DynamoDBProductRepository) FindOne(ID *string) (*products.Product, error) {
-	var item *products.Product
+	item := &products.Product{}
 	output, err := repository.DynamoDB.GetItem(&dynamodb.GetItemInput{
 		Key:       map[string]*dynamodb.AttributeValue{"id": {S: ID}},
 		TableName: repository.tableName,
@@ -101,7 +102,7 @@ func (repository *DynamoDBProductRepository) FindMany(ids []*string) ([]*product
 }
 
 func (repository *DynamoDBProductRepository) FindByCategoryID(ID *string) ([]*products.Product, error) {
-	var items []*products.Product
+	items := make([]*products.Product, 0)
 	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":categoryId": {S: ID}},
 		KeyConditionExpression:    aws.String("categoryId = :categoryId"),
