@@ -7,12 +7,19 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-type ProductRepository struct {
+type DynamoDBProductRepository struct {
 	DynamoDB  *dynamodb.DynamoDB
 	tableName *string
 }
 
-func (repository *ProductRepository) Store(product *products.Product) error {
+func NewDynamoDBProductRepository(db *dynamodb.DynamoDB) *DynamoDBProductRepository {
+	return &DynamoDBProductRepository{
+		DynamoDB:  db,
+		tableName: aws.String("products"),
+	}
+}
+
+func (repository *DynamoDBProductRepository) Store(product *products.Product) error {
 	item, err := dynamodbattribute.MarshalMap(product)
 
 	if err != nil {
@@ -28,7 +35,7 @@ func (repository *ProductRepository) Store(product *products.Product) error {
 	return err
 }
 
-func (repository *ProductRepository) Update(product *products.Product) error {
+func (repository *DynamoDBProductRepository) Update(product *products.Product) error {
 	item, err := dynamodbattribute.MarshalMap(product)
 
 	if err != nil {
@@ -43,7 +50,7 @@ func (repository *ProductRepository) Update(product *products.Product) error {
 
 	return err
 }
-func (repository *ProductRepository) FindOne(ID *string) (*products.Product, error) {
+func (repository *DynamoDBProductRepository) FindOne(ID *string) (*products.Product, error) {
 	var item *products.Product
 	output, err := repository.DynamoDB.GetItem(&dynamodb.GetItemInput{
 		Key:       map[string]*dynamodb.AttributeValue{"id": {S: ID}},
@@ -63,7 +70,7 @@ func (repository *ProductRepository) FindOne(ID *string) (*products.Product, err
 	return item, nil
 }
 
-func (repository *ProductRepository) batchRequest(key string, items []*string) ([]*products.Product, error) {
+func (repository *DynamoDBProductRepository) batchRequest(key string, items []*string) ([]*products.Product, error) {
 	list := make([]*products.Product, len(items))
 	keys := make([]map[string]*dynamodb.AttributeValue, len(items))
 
@@ -89,11 +96,11 @@ func (repository *ProductRepository) batchRequest(key string, items []*string) (
 	return list, nil
 }
 
-func (repository *ProductRepository) FindMany(ids []*string) ([]*products.Product, error) {
+func (repository *DynamoDBProductRepository) FindMany(ids []*string) ([]*products.Product, error) {
 	return repository.batchRequest("id", ids)
 }
 
-func (repository *ProductRepository) FindByCategoryID(ID *string) ([]*products.Product, error) {
+func (repository *DynamoDBProductRepository) FindByCategoryID(ID *string) ([]*products.Product, error) {
 	var items []*products.Product
 	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":categoryId": {S: ID}},
@@ -115,7 +122,7 @@ func (repository *ProductRepository) FindByCategoryID(ID *string) ([]*products.P
 	return items, nil
 }
 
-func (repository *ProductRepository) Delete(ID *string) error {
+func (repository *DynamoDBProductRepository) Delete(ID *string) error {
 	_, err := repository.DynamoDB.DeleteItem(&dynamodb.DeleteItemInput{
 		Key:       map[string]*dynamodb.AttributeValue{"id": {S: ID}},
 		TableName: repository.tableName,
