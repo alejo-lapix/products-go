@@ -63,6 +63,34 @@ func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) 
 	return mainCategories, nil
 }
 
+func (repository *DynamoDBCategoryRepository) All(cursor *string) ([]*categories.Category, error) {
+	currentCategory := make([]*categories.Category, 0)
+	scanInput := &dynamodb.ScanInput{
+		Limit:     aws.Int64(15),
+		TableName: repository.tableName,
+	}
+
+	if *cursor != "" {
+		scanInput.FilterExpression = aws.String("#name > :name")
+		scanInput.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{":name": {S: cursor}}
+		scanInput.ExpressionAttributeNames = map[string]*string{"#name": aws.String("name")}
+	}
+
+	output, err := repository.DynamoDB.Scan(scanInput)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, &currentCategory)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return currentCategory, nil
+}
+
 func (repository *DynamoDBCategoryRepository) Find(ID *string) (*categories.Category, error) {
 	var currentCategory *categories.Category
 	output, err := repository.DynamoDB.GetItem(&dynamodb.GetItemInput{

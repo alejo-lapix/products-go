@@ -72,4 +72,5 @@ type CategoryRepository interface {
 	Store(*Category) error
 	Remove(ID *string) error
 	Update(ID *string, category *Category) error
+	All(cursor *string) ([]*Category, error)
 }
