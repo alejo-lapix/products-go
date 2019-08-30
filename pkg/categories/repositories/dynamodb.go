@@ -41,6 +41,20 @@ func (repository *DynamoDBCategoryRepository) MainCategories(limit, offset int) 
 	return items, nil
 }
 
+func (repository *DynamoDBCategoryRepository) Total() (int64, error) {
+	output, err := repository.DynamoDB.Scan(&dynamodb.ScanInput{
+		ReturnConsumedCapacity: aws.String("TOTAL"),
+		Select:                 aws.String("COUNT"),
+		TableName:              repository.tableName,
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return *output.Count, nil
+}
+
 func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) ([]*categories.Category, error) {
 	var mainCategories []*categories.Category
 	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
@@ -63,19 +77,9 @@ func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) 
 	return mainCategories, nil
 }
 
-func (repository *DynamoDBCategoryRepository) All(cursor *string) ([]*categories.Category, error) {
+func (repository *DynamoDBCategoryRepository) All() ([]*categories.Category, error) {
 	currentCategory := make([]*categories.Category, 0)
-	scanInput := &dynamodb.ScanInput{
-		Limit:     aws.Int64(15),
-		TableName: repository.tableName,
-	}
-
-	if *cursor != "" {
-		scanInput.FilterExpression = aws.String("#name > :name")
-		scanInput.ExpressionAttributeValues = map[string]*dynamodb.AttributeValue{":name": {S: cursor}}
-		scanInput.ExpressionAttributeNames = map[string]*string{"#name": aws.String("name")}
-	}
-
+	scanInput := &dynamodb.ScanInput{TableName: repository.tableName}
 	output, err := repository.DynamoDB.Scan(scanInput)
 
 	if err != nil {
