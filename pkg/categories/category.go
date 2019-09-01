@@ -20,7 +20,7 @@ func createdAt() *string {
 	return &createdAt
 }
 
-func newCategory(name, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
+func NewCategory(name, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
 	id := uuid.New().String()
 
 	category := &Category{
