@@ -20,24 +20,16 @@ func createdAt() *string {
 	return &createdAt
 }
 
-func NewMainCategoryEntity(name *string) (*Category, error) {
+func newCategory(name, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
 	id := uuid.New().String()
 
-	return &Category{
-		ID:        &id,
-		Name:      name,
-		CreatedAt: createdAt(),
-	}, nil
-}
-
-func NewSubCategoryEntity(name, parentCategoryID *string) (*Category, error) {
-	category, err := NewMainCategoryEntity(name)
-
-	if err != nil {
-		return nil, err
+	category := &Category{
+		ID:               &id,
+		Name:             name,
+		ParentCategoryID: parentCategoryID,
+		Multimedia:       multimedia,
+		CreatedAt:        createdAt(),
 	}
-
-	category.ParentCategoryID = parentCategoryID
 
 	return category, nil
 }
