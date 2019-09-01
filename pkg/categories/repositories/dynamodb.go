@@ -79,7 +79,7 @@ func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) 
 
 func (repository *DynamoDBCategoryRepository) All() ([]*categories.Category, error) {
 	currentCategory := make([]*categories.Category, 0)
-	scanInput := &dynamodb.ScanInput{TableName: repository.tableName}
+	scanInput := &dynamodb.ScanInput{TableName: repository.tableName, IndexName: aws.String("id-name-index")}
 	output, err := repository.DynamoDB.Scan(scanInput)
 
 	if err != nil {
@@ -96,7 +96,7 @@ func (repository *DynamoDBCategoryRepository) All() ([]*categories.Category, err
 }
 
 func (repository *DynamoDBCategoryRepository) Find(ID *string) (*categories.Category, error) {
-	var currentCategory *categories.Category
+	currentCategory := &categories.Category{}
 	output, err := repository.DynamoDB.GetItem(&dynamodb.GetItemInput{
 		Key:       map[string]*dynamodb.AttributeValue{"id": {S: ID}},
 		TableName: repository.tableName,

@@ -131,3 +131,21 @@ func (repository *DynamoDBProductRepository) Delete(ID *string) error {
 
 	return err
 }
+
+func (repository *DynamoDBProductRepository) All() ([]*products.Product, error) {
+	items := make([]*products.Product, 0)
+	scanInput := &dynamodb.ScanInput{TableName: repository.tableName}
+	output, err := repository.DynamoDB.Scan(scanInput)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, &items)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}

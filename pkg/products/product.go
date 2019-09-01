@@ -42,6 +42,7 @@ type ProductRepository interface {
 	Update(id *string, product *Product) error
 	FindOne(id *string) (*Product, error)
 	FindMany(ids []*string) ([]*Product, error)
+	All() ([]*Product, error)
 	FindByCategoryID(id *string) ([]*Product, error)
 	Delete(id *string) error
 }
