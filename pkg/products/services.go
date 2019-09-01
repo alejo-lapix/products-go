@@ -13,7 +13,7 @@ func (service *ProductService) NewProduct(name, description, categoryID *string,
 		return nil, err
 	}
 
-	err = service.repository.Store(product)
+	err = service.Repository.Store(product)
 
 	if err != nil {
 		return nil, err
