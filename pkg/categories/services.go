@@ -1,11 +1,13 @@
 package categories
 
+import "github.com/alejo-lapix/multimedia-go/persistence"
+
 type StoreCategoryService struct {
 	repository CategoryRepository
 }
 
-func (service *StoreCategoryService) NewMainCategory(name *string) (*Category, error) {
-	category, err := NewMainCategoryEntity(name)
+func (service *StoreCategoryService) NewCategory(name *string, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
+	category, err := NewCategory(name, parentCategoryID, multimedia)
 
 	if err != nil {
 		return nil, err
@@ -18,20 +20,4 @@ func (service *StoreCategoryService) NewMainCategory(name *string) (*Category, e
 	}
 
 	return category, nil
-}
-
-func (service *StoreCategoryService) NewSubCategory(name, parentCategoryID *string) (*Category, error) {
-	childCategory, err := NewSubCategoryEntity(name, parentCategoryID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = service.repository.Store(childCategory)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return childCategory, nil
 }
