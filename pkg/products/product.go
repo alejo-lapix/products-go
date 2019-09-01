@@ -22,7 +22,7 @@ type Product struct {
 	CreatedAt         *string                       `json:"createdAt"`
 }
 
-func NewProductEntity(name, description, categoryID *string, price *float64, measurement *UnitOfMeasurement) (*Product, error) {
+func NewProductEntity(name, description, categoryID *string, price *float64, measurement *UnitOfMeasurement, multimedia []*persistence.MultimediaItem) (*Product, error) {
 	id := uuid.New().String()
 	createdAt := time.Now().Format(time.RFC3339)
 
@@ -32,6 +32,7 @@ func NewProductEntity(name, description, categoryID *string, price *float64, mea
 		Price:             price,
 		Description:       description,
 		CategoryID:        categoryID,
+		Multimedia:        multimedia,
 		CreatedAt:         &createdAt,
 		UnitOfMeasurement: measurement,
 	}, nil
