@@ -3,7 +3,7 @@ package products
 import "github.com/alejo-lapix/multimedia-go/persistence"
 
 type ProductService struct {
-	repository ProductRepository
+	Repository ProductRepository
 }
 
 func (service *ProductService) NewProduct(name, description, categoryID *string, price *float64, measurement *UnitOfMeasurement, multimedia []*persistence.MultimediaItem) (*Product, error) {
