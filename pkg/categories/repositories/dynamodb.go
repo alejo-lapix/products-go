@@ -23,9 +23,11 @@ func NewDynamoDBCategoryRepository(db *dynamodb.DynamoDB) *DynamoDBCategoryRepos
 
 func (repository *DynamoDBCategoryRepository) MainCategories(limit, offset int) ([]*categories.Category, error) {
 	items := make([]*categories.Category, 0)
-	output, err := repository.DynamoDB.Scan(&dynamodb.ScanInput{
-		FilterExpression: aws.String("attribute_not_exists(parentCategoryId)"),
-		TableName:        repository.tableName,
+	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
+		IndexName:                 aws.String("isMainCategory-index"),
+		KeyConditionExpression:    aws.String("isMainCategory = :yes"),
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":yes": {S: aws.String("y")}},
+		TableName:                 repository.tableName,
 	})
 
 	if err != nil {

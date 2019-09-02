@@ -10,7 +10,7 @@ type Category struct {
 	ID               *string                       `json:"id"`
 	Name             *string                       `json:"name" validate:"required"`
 	Multimedia       []*persistence.MultimediaItem `json:"multimedia"`
-	ParentCategoryID *string                       `json:"parentCategoryId"`
+	ParentCategoryID *string                       `json:"parentCategoryId,omitempty"`
 	IsMainCategory   *string                       `json:"isMainCategory"`
 	CreatedAt        *string                       `json:"createdAt"`
 }
