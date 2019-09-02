@@ -11,6 +11,7 @@ type Category struct {
 	Name             *string                       `json:"name" validate:"required"`
 	Multimedia       []*persistence.MultimediaItem `json:"multimedia"`
 	ParentCategoryID *string                       `json:"parentCategoryId"`
+	IsMainCategory   *string                       `json:"isMainCategory"`
 	CreatedAt        *string                       `json:"createdAt"`
 }
 
@@ -22,12 +23,18 @@ func createdAt() *string {
 
 func NewCategory(name, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
 	id := uuid.New().String()
+	isMainCategory := "y"
+
+	if parentCategoryID != nil && *parentCategoryID != "" {
+		isMainCategory = "n"
+	}
 
 	category := &Category{
 		ID:               &id,
 		Name:             name,
 		ParentCategoryID: parentCategoryID,
 		Multimedia:       multimedia,
+		IsMainCategory:   &isMainCategory,
 		CreatedAt:        createdAt(),
 	}
 
