@@ -9,6 +9,7 @@ import (
 type Category struct {
 	ID               *string                       `json:"id"`
 	Name             *string                       `json:"name" validate:"required"`
+	Description      *string                       `json:"description"`
 	Multimedia       []*persistence.MultimediaItem `json:"multimedia"`
 	ParentCategoryID *string                       `json:"parentCategoryId,omitempty"`
 	IsMainCategory   *string                       `json:"isMainCategory"`
@@ -21,7 +22,7 @@ func createdAt() *string {
 	return &createdAt
 }
 
-func NewCategory(name, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
+func NewCategory(name, description, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
 	id := uuid.New().String()
 	isMainCategory := "y"
 
@@ -32,6 +33,7 @@ func NewCategory(name, parentCategoryID *string, multimedia []*persistence.Multi
 	category := &Category{
 		ID:               &id,
 		Name:             name,
+		Description:      description,
 		ParentCategoryID: parentCategoryID,
 		Multimedia:       multimedia,
 		IsMainCategory:   &isMainCategory,
