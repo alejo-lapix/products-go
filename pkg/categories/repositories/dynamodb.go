@@ -24,10 +24,14 @@ func NewDynamoDBCategoryRepository(db *dynamodb.DynamoDB) *DynamoDBCategoryRepos
 func (repository *DynamoDBCategoryRepository) MainCategories(limit, offset int) ([]*categories.Category, error) {
 	items := make([]*categories.Category, 0)
 	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
-		IndexName:                 aws.String("isMainCategory-index"),
-		KeyConditionExpression:    aws.String("isMainCategory = :yes"),
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":yes": {S: aws.String("y")}},
-		TableName:                 repository.tableName,
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":yes":     {S: aws.String("y")},
+			":visible": {BOOL: aws.Bool(true)},
+		},
+		FilterExpression:       aws.String("visible = :visible"),
+		IndexName:              aws.String("isMainCategory-index"),
+		KeyConditionExpression: aws.String("isMainCategory = :yes"),
+		TableName:              repository.tableName,
 	})
 
 	if err != nil {
@@ -58,11 +62,11 @@ func (repository *DynamoDBCategoryRepository) Total() (int64, error) {
 }
 
 func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) ([]*categories.Category, error) {
-	var mainCategories []*categories.Category
+	mainCategories := make([]*categories.Category, 0)
 	output, err := repository.DynamoDB.Query(&dynamodb.QueryInput{
 		KeyConditionExpression:    aws.String("parentCategoryId = :categoryId"),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{":categoryId": {S: categoryID}},
-		IndexName:                 aws.String("parentCategoryId"),
+		IndexName:                 aws.String("parentCategoryId-index"),
 		TableName:                 repository.tableName,
 	})
 
@@ -70,7 +74,7 @@ func (repository *DynamoDBCategoryRepository) SubCategories(categoryID *string) 
 		return nil, err
 	}
 
-	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, mainCategories)
+	err = dynamodbattribute.UnmarshalListOfMaps(output.Items, &mainCategories)
 
 	if err != nil {
 		return nil, err

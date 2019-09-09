@@ -13,6 +13,7 @@ type Category struct {
 	Multimedia       []*persistence.MultimediaItem `json:"multimedia"`
 	ParentCategoryID *string                       `json:"parentCategoryId,omitempty"`
 	IsMainCategory   *string                       `json:"isMainCategory"`
+	Visible          *bool                         `json:"visible"`
 	CreatedAt        *string                       `json:"createdAt"`
 }
 
@@ -22,7 +23,7 @@ func createdAt() *string {
 	return &createdAt
 }
 
-func NewCategory(name, description, parentCategoryID *string, multimedia []*persistence.MultimediaItem) (*Category, error) {
+func NewCategory(name, description, parentCategoryID *string, visible *bool, multimedia []*persistence.MultimediaItem) (*Category, error) {
 	id := uuid.New().String()
 	isMainCategory := "y"
 
@@ -36,6 +37,7 @@ func NewCategory(name, description, parentCategoryID *string, multimedia []*pers
 		Description:      description,
 		ParentCategoryID: parentCategoryID,
 		Multimedia:       multimedia,
+		Visible:          visible,
 		IsMainCategory:   &isMainCategory,
 		CreatedAt:        createdAt(),
 	}
@@ -67,7 +69,11 @@ type Commitable interface {
 }
 
 type CategoryRepository interface {
+	// MainCategories shows only the visible categories that does
+	// not have a parent category, it's useful for the end user
 	MainCategories(limit, offset int) ([]*Category, error)
+
+	// SubCategories shows the categories related to other one
 	SubCategories(categoryID *string) ([]*Category, error)
 	Find(ID *string) (*Category, error)
 	Store(*Category) error
