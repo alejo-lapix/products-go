@@ -19,6 +19,14 @@ type CacheCategoryRepository struct {
 	ttl   int
 }
 
+func NewCacheCategoryRepository(repository categories.CategoryRepository, cache cache, ttl int) *CacheCategoryRepository {
+	return &CacheCategoryRepository{
+		CategoryRepository: repository,
+		cache:              cache,
+		ttl:                ttl,
+	}
+}
+
 type inMemory struct {
 	elements   map[string]interface{}
 	timeStamps map[string]*time.Time
