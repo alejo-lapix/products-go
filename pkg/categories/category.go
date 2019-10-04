@@ -1,6 +1,7 @@
 package categories
 
 import (
+	"github.com/alejo-lapix/multimedia-go/banners"
 	"github.com/alejo-lapix/multimedia-go/persistence"
 	"github.com/google/uuid"
 	"time"
@@ -15,6 +16,7 @@ type Category struct {
 	IsMainCategory   *string                       `json:"isMainCategory"`
 	Visible          *bool                         `json:"visible"`
 	CreatedAt        *string                       `json:"createdAt"`
+	Banner           *banners.Banner               `json:"banner"`
 }
 
 func createdAt() *string {
@@ -23,7 +25,7 @@ func createdAt() *string {
 	return &createdAt
 }
 
-func NewCategory(name, description, parentCategoryID *string, visible *bool, multimedia []*persistence.MultimediaItem) (*Category, error) {
+func NewCategory(name, description, parentCategoryID *string, visible *bool, multimedia []*persistence.MultimediaItem, banner *banners.Banner) (*Category, error) {
 	id := uuid.New().String()
 	isMainCategory := "y"
 
@@ -38,8 +40,10 @@ func NewCategory(name, description, parentCategoryID *string, visible *bool, mul
 		ParentCategoryID: parentCategoryID,
 		Multimedia:       multimedia,
 		Visible:          visible,
-		IsMainCategory:   &isMainCategory,
-		CreatedAt:        createdAt(),
+		Banner:           banner,
+
+		IsMainCategory: &isMainCategory,
+		CreatedAt:      createdAt(),
 	}
 
 	return category, nil

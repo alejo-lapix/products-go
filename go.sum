@@ -7,6 +7,8 @@ github.com/alejo-lapix/multimedia-go v1.0.2 h1:Hl47GU08C1lYCRne7yD4ttAOdSTMkmWYR
 github.com/alejo-lapix/multimedia-go v1.0.2/go.mod h1:hcsJD+IiDMb4hmYiSP5NI02wWxRpAAS/XhzMITJTxRA=
 github.com/alejo-lapix/multimedia-go v1.0.3 h1:cwSofVwLCjWi6yTK9NqAN2jj7OSOgIjS6ph5qEBij0A=
 github.com/alejo-lapix/multimedia-go v1.0.3/go.mod h1:hcsJD+IiDMb4hmYiSP5NI02wWxRpAAS/XhzMITJTxRA=
+github.com/alejo-lapix/multimedia-go v1.0.9 h1:u/6y8KUtJYKOE+YfCrW3cVtPhw1hdzd/QVRfGXq3Gl8=
+github.com/alejo-lapix/multimedia-go v1.0.9/go.mod h1:hcsJD+IiDMb4hmYiSP5NI02wWxRpAAS/XhzMITJTxRA=
 github.com/aws/aws-sdk-go v1.23.3 h1:Ty/4P6tOFJkDnKDrFJWnveznvESblf8QOheD1CwQPDU=
 github.com/aws/aws-sdk-go v1.23.3/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/go-playground/locales v0.12.1 h1:2FITxuFt/xuCNP1Acdhv62OzaCiviiE4kotfhkmOqEc=
