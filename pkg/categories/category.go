@@ -80,6 +80,10 @@ type CategoryRepository interface {
 	// SubCategories shows the categories related to other one
 	SubCategories(categoryID *string) ([]*Category, error)
 	Find(ID *string) (*Category, error)
+
+	// FindManyCategory should look for the parent category
+	// if its not a principal one, otherwise returns it self
+	FindMainCategory(childCategoryID *string) (*Category, error)
 	Store(*Category) error
 	Remove(ID *string) error
 	Update(ID *string, category *Category) error

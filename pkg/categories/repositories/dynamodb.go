@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"github.com/alejo-lapix/products-go/pkg/categories"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -8,8 +9,9 @@ import (
 )
 
 type DynamoDBCategoryRepository struct {
-	DynamoDB  *dynamodb.DynamoDB
-	tableName *string
+	DynamoDB            *dynamodb.DynamoDB
+	tableName           *string
+	parentCategoryTries int
 }
 
 func NewDynamoDBCategoryRepository(db *dynamodb.DynamoDB) *DynamoDBCategoryRepository {
@@ -99,6 +101,36 @@ func (repository *DynamoDBCategoryRepository) All() ([]*categories.Category, err
 	}
 
 	return currentCategory, nil
+}
+
+func (repository *DynamoDBCategoryRepository) FindMainCategory(childCategoryID *string) (*categories.Category, error) {
+	category, err := repository.Find(childCategoryID)
+
+	defer repository.resetRetries()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if category == nil {
+		return nil, fmt.Errorf("the given category does not have a valid parent")
+	}
+
+	if category.ParentCategoryID == nil || *category.ParentCategoryID == "" {
+		return category, nil
+	}
+
+	repository.parentCategoryTries++
+
+	if repository.parentCategoryTries > 10 {
+		return nil, fmt.Errorf("the given category could not be find while looking at %d categories", repository.parentCategoryTries)
+	}
+
+	return repository.FindMainCategory(category.ParentCategoryID)
+}
+
+func (repository *DynamoDBCategoryRepository) resetRetries() {
+	repository.parentCategoryTries = 0
 }
 
 func (repository *DynamoDBCategoryRepository) Find(ID *string) (*categories.Category, error) {
