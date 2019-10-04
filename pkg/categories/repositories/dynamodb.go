@@ -123,7 +123,7 @@ func (repository *DynamoDBCategoryRepository) FindMainCategory(childCategoryID *
 	repository.parentCategoryTries++
 
 	if repository.parentCategoryTries > 10 {
-		return nil, fmt.Errorf("the given category could not be find while looking at %d categories", repository.parentCategoryTries)
+		return nil, fmt.Errorf("the parent category could not be find while looking at %d categories", repository.parentCategoryTries)
 	}
 
 	return repository.FindMainCategory(category.ParentCategoryID)

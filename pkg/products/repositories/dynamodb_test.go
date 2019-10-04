@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-var tableName = "productos"
+var tableName = "products"
 var ID = uuid.New().String()
 
 func TestProductRepository_Store(t *testing.T) {
@@ -50,7 +50,7 @@ func TestProductRepository_Store(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
@@ -92,11 +92,11 @@ func TestProductRepository_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
-			if err := repository.Update(tt.args.product); (err != nil) != tt.wantErr {
+			if err := repository.Update(tt.args.product.ID, tt.args.product); (err != nil) != tt.wantErr {
 				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -121,12 +121,13 @@ func TestProductRepository_FindByCategoryID(t *testing.T) {
 		{
 			name:    "Cagetories",
 			args:    args{id: aws.String("bbbbb")},
+			want:    []*products.Product{},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
@@ -135,7 +136,7 @@ func TestProductRepository_FindByCategoryID(t *testing.T) {
 				t.Errorf("FindByCategoryID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if false && !reflect.DeepEqual(got, tt.want) {
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("FindByCategoryID() got = %v, want %v", got, tt.want)
 			}
 		})
@@ -168,7 +169,7 @@ func TestProductRepository_FindMany(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
@@ -177,7 +178,7 @@ func TestProductRepository_FindMany(t *testing.T) {
 				t.Errorf("FindMany() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if false && !reflect.DeepEqual(got, tt.want) {
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("FindMany() got = %v, want %v", got, tt.want)
 			}
 		})
@@ -203,7 +204,7 @@ func TestProductRepository_FindOne(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
@@ -237,7 +238,7 @@ func TestProductRepository_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repository := &ProductRepository{
+			repository := &DynamoDBProductRepository{
 				DynamoDB:  dynamoDBInstance(),
 				tableName: &tableName,
 			}
