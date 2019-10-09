@@ -128,7 +128,7 @@ func (repository *CacheCategoryRepository) Find(ID *string) (*categories.Categor
 	return elements.(*categories.Category), nil
 }
 
-func (repository *CacheCategoryRepository) FindMany(ids []*string) ([]*Category, error) {
+func (repository *CacheCategoryRepository) FindMany(ids []*string) ([]*categories.Category, error) {
 	return repository.CategoryRepository.FindMany(ids)
 }
 
