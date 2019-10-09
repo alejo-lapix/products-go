@@ -153,6 +153,32 @@ func (repository *DynamoDBCategoryRepository) Find(ID *string) (*categories.Cate
 	return currentCategory, nil
 }
 
+func (repository *DynamoDBCategoryRepository) FindMany(items []*string) ([]*categories.Category, error) {
+	list := make([]*categories.Category, len(items))
+	keys := make([]map[string]*dynamodb.AttributeValue, len(items))
+
+	for index, item := range items {
+		keys[index] = map[string]*dynamodb.AttributeValue{"id": {S: item}}
+	}
+
+	output, err := repository.DynamoDB.BatchGetItem(&dynamodb.BatchGetItemInput{
+		RequestItems:           map[string]*dynamodb.KeysAndAttributes{*repository.tableName: {Keys: keys}},
+		ReturnConsumedCapacity: nil,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = dynamodbattribute.UnmarshalListOfMaps(output.Responses[*repository.tableName], &list)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 func (repository *DynamoDBCategoryRepository) Store(category *categories.Category) error {
 	item, err := dynamodbattribute.MarshalMap(category)
 
